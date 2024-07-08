@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package news;
+
+service NewsService {
+  rpc CreateNews (CreateNewsRequest) returns (CreateNewsResponse);
+  rpc GetNews (GetNewsRequest) returns (GetNewsResponse);
+}
+
+message News {
+  string id = 1;
+  string date = 2;
+  string title = 3;
+  string shortDescription = 4;
+  string text = 5;
+}
+
+message CreateNewsRequest {
+  string date = 1;
+  string title = 2;
+  string shortDescription = 3;
+  string text = 4;
+}
+
+message CreateNewsResponse {
+  string id = 1;
+}
+
+message GetNewsRequest {
+  string sortBy = 1;
+  string sortOrder = 2;
+  string filterBy = 3;
+  string filterValue = 4;
+}
+
+message GetNewsResponse {
+  repeated News news = 1;
+}
