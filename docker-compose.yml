@@ -1,0 +1,54 @@
+services:
+  mongo:
+    image: mongo
+    container_name: mongo_grpc
+    attach: false
+    ports:
+      - "27019:27017" # Using external port 27019
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - grpc
+    healthcheck:
+      test: [ "CMD-SHELL", "mongosh --eval 'db.runCommand({ ping: 1 })'" ]
+
+  server:
+    container_name: server-grpc
+    build:
+      context: ./
+      dockerfile: ./server/Dockerfile
+    ports:
+      - "50051:50051"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/newsGRPC
+      - GRPC_URI=127.0.0.1:50051
+    networks:
+      - grpc
+    healthcheck:
+      test: [ "CMD", "nc", "-zv", "localhost", "50051" ]
+      interval: 10s
+      timeout: 10s
+      retries: 1
+
+  client:
+    container_name: client-grpc
+    build:
+      context: ./
+      dockerfile: ./client/Dockerfile
+    depends_on:
+      server:
+        condition: service_healthy
+    environment:
+      - GRPC_URI=server:50051
+    networks:
+      - grpc
+
+volumes:
+  mongo-data:
+
+networks:
+  grpc:
+    driver: bridge

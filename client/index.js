@@ -1,9 +1,10 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const path = require('path');
-const {grpcUri} = require('../server/config');
+const {grpcUri} = require('./config');
 
-const newsProtoPath = path.join(__dirname, '../server/protos', 'news.proto');
+
+const newsProtoPath = path.join(__dirname, '../server/protos/news.proto');
 const newsProtoDefinition = protoLoader.loadSync(newsProtoPath, {
     keepCase: true,
     longs: String,
@@ -15,6 +16,7 @@ const newsProto = grpc.loadPackageDefinition(newsProtoDefinition).news;
 
 const client = new newsProto.NewsService(grpcUri, grpc.credentials.createInsecure());
 
+
 // Example usage of the client
 const currentTime = new Date().toISOString();
 const news = {
@@ -24,10 +26,11 @@ const news = {
     text: 'Detailed description of the news. - ' + currentTime
 };
 
-client.CreateNews(news, (err, response) => {
+await client.CreateNews(news, (err, response) => {
     if (err) console.error(err);
     else console.log('News created with id: ', response.id);
 });
+
 
 const filterRequest = {
     sortBy: 'date',
@@ -36,7 +39,7 @@ const filterRequest = {
     filterValue: 'New'
 };
 
-client.GetNews(filterRequest, (err, response) => {
+await client.GetNews(filterRequest, (err, response) => {
     if (err) console.error(err);
     else console.log('Filtered news: ', response.news);
 });

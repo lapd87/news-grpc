@@ -21,3 +21,11 @@ server.addService(newsProto.NewsService.service, newsService);
 server.bindAsync(grpcUri, grpc.ServerCredentials.createInsecure(), () => {
     console.log(`gRPC server running at ${grpcUri}`);
 });
+
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error(reason, 'Unhandled Rejection at Promise', promise);
+}).on('uncaughtException', error => {
+    console.error(error, 'Uncaught Exception thrown');
+    process.exit(1);
+});
