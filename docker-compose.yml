@@ -24,7 +24,7 @@ services:
         condition: service_healthy
     environment:
       - MONGO_URI=mongodb://mongo:27017/newsGRPC
-      - GRPC_URI=127.0.0.1:50051
+      - GRPC_URI=0.0.0.0:50051
     networks:
       - grpc
     healthcheck:
